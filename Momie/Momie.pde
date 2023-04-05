@@ -4,6 +4,11 @@ float wallW = 1000/LAB_SIZE;
 float wallH = 1000/LAB_SIZE;
 PShape corps;
 PShape tete;
+PShape bras1;
+PShape bras2;
+PShape yeux1;
+PShape yeux2;
+PShape momie;
 
 void setup() {
   randomSeed(2);
@@ -47,6 +52,58 @@ void setup() {
      }
    }
   tete.endShape();
+  
+   bras1 = createShape();
+   bras1.beginShape(QUAD_STRIP); 
+   bras1.fill(235, 216, 97);
+   bras1.noStroke();
+   tailleBande = 4;
+   for(int i =0; i < 20; i+=2) {
+     for(float j = 0; j < 2*PI; j+= 2*PI/64.0) {
+       red = 120 + 105 * noise(i, j);
+       green = 120 + 76 * noise(i, j);
+       bras1.fill(red, green, 50);
+       rayon = 1 + 2 * sin((i + tailleBande*(j/(2*PI)))*PI/20.);
+       bras1.vertex(5+rayon*cos(j), i + tailleBande*(j/(2*PI)), 64 +rayon*sin(j));
+       bras1.vertex(5+rayon*cos(j), i + tailleBande + tailleBande*(j/(2*PI)), 64 +rayon*sin(j));
+     }
+   }
+  bras1.endShape();
+  
+   bras2 = createShape();
+   bras2.beginShape(QUAD_STRIP);  
+   bras2.fill(235, 216, 97);
+   bras2.noStroke();
+   for(int i =0; i < 20; i+=2) {
+     for(float j = 0; j < 2*PI; j+= 2*PI/64.0) {
+       red = 120 + 105 * noise(i, j);
+       green = 120 + 76 * noise(i, j);
+       bras2.fill(red, green, 50);
+       rayon = 1 + 2 * sin((i + tailleBande*(j/(2*PI)))*PI/20.);
+       bras2.vertex(-5+rayon*cos(j), i + tailleBande*(j/(2*PI)), 64 +rayon*sin(j));
+       bras2.vertex(-5+rayon*cos(j), i + tailleBande + tailleBande*(j/(2*PI)), 64 +rayon*sin(j));
+     }
+   }
+  bras2.endShape();
+  yeux1 = createShape(SPHERE, 1); 
+   yeux1.setFill(color(0, 0, 0));
+   yeux1.setStroke(0);
+  yeux1.translate(3, 4.5, 78);
+  yeux1.endShape();
+  yeux2 = createShape(SPHERE, 1); 
+   yeux2.setFill(color(0, 0, 0));
+   yeux2.setStroke(0);
+  yeux2.translate(-3, 4.5, 78);
+  yeux2.endShape();
+  
+  
+  momie = createShape(GROUP);
+  momie.addChild(corps);
+  momie.addChild(tete);
+  momie.addChild(bras1);
+  momie.addChild(bras2);
+  momie.addChild(yeux1);
+  momie.addChild(yeux2);
 }
 
 void draw() {
@@ -57,6 +114,5 @@ void draw() {
          0, 0, -1);
   translate(0, (1)*wallH, -50);
   rotateZ(frameCount/20.0);
-  shape(corps);
-  shape(tete);
+  shape(momie);
 }

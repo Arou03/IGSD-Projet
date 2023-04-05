@@ -230,7 +230,7 @@ void draw() {
 
   stroke(0);
   if (inLab) {
-    perspective(PI/3.0, float(width)/float(height), 1, 1000);
+    perspective(2*PI/3.0, float(width)/float(height), 1, 1000);
     if (animT)
       camera((posX-dirX*anim/20.0)*wallW,      (posY-dirY*anim/20.0)*wallH,      -15+2*sin(anim*PI/5.0), 
              (posX-dirX*anim/20.0+dirX)*wallW, (posY-dirY*anim/20.0+dirY)*wallH, -15+4*sin(anim*PI/5.0), 0, 0, -1);
