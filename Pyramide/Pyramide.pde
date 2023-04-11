@@ -31,11 +31,13 @@ char[][][][] sides ;
 PShape laby0[];
 PShape ceiling0[];
 PShape ceiling1[];
+PShape sortie;
 
 float wallW;
 float wallH;
 
 PImage  texture0;
+PImage  texture1;
 
 int currentFloor = 0;
 
@@ -43,6 +45,7 @@ void setup() {
   pixelDensity(2);
   randomSeed(2);
   texture0 = loadImage("stones.jpg");
+  texture1 = loadImage("sortie.png");
   size(1000, 1000, P3D);
   labyrinthe = new char[LAB_SIZE/2-1][LAB_SIZE][LAB_SIZE];
   sides = new char[LAB_SIZE/2-1][LAB_SIZE][LAB_SIZE][4];
@@ -121,7 +124,12 @@ void initPyramide(int etage, int SIZE) {
   
   float wallW = width/LAB_SIZE;
   float wallH = height/LAB_SIZE;
-
+  
+  sortie = createShape();
+  sortie.beginShape(QUADS);
+  sortie.texture(texture1);
+  sortie.noStroke();
+  
   ceiling0[etage] = createShape();
   ceiling1[etage] = createShape();
   
@@ -138,7 +146,6 @@ void initPyramide(int etage, int SIZE) {
   for (int j=0; j<SIZE; j++) {
     for (int i=0; i<SIZE; i++) {
       if (labyrinthe[etage][j][i]=='#') {
-        
         laby0[etage].fill(i*25, j*25, 255-i*10+j*10);
         if (j==0 || (labyrinthe[etage][j-1][i]==' ' || labyrinthe[etage][j-1][i]=='s') ) {
           laby0[etage].normal(0, -1, 0);
@@ -202,12 +209,11 @@ void initPyramide(int etage, int SIZE) {
         ceiling1[etage].vertex(i*wallW+wallW/2, j*wallH+wallH/2, 50);
         ceiling1[etage].vertex(i*wallW-wallW/2, j*wallH+wallH/2, 50);        
       } else {
-        if(labyrinthe[etage][j][i] == 's') laby0[etage].fill(255); // ground
-        else laby0[etage].fill(192); // ground
-        laby0[etage].vertex(i*wallW-wallW/2, j*wallH-wallH/2, -50, 0, 0);
-        laby0[etage].vertex(i*wallW+wallW/2, j*wallH-wallH/2, -50, 0, 1);
-        laby0[etage].vertex(i*wallW+wallW/2, j*wallH+wallH/2, -50, 1, 1);
-        laby0[etage].vertex(i*wallW-wallW/2, j*wallH+wallH/2, -50, 1, 0);
+        laby0[etage].fill(255); //grounds
+        laby0[etage].vertex(i*wallW-wallW/2, j*wallH-wallH/2, -50, (0)/(float)WALLD*texture0.width, (0.5+(0)/2.0/WALLD)*texture0.height);
+        laby0[etage].vertex(i*wallW+wallW/2, j*wallH-wallH/2, -50, (1)/(float)WALLD*texture0.width, (0.5+(0)/2.0/WALLD)*texture0.height);
+        laby0[etage].vertex(i*wallW+wallW/2, j*wallH+wallH/2, -50, (1)/(float)WALLD*texture0.width, (0.5+(1)/2.0/WALLD)*texture0.height);
+        laby0[etage].vertex(i*wallW-wallW/2, j*wallH+wallH/2, -50, (0)/(float)WALLD*texture0.width, (0.5+(1)/2.0/WALLD)*texture0.height);
         
         ceiling0[etage].fill(32); // top of walls
         ceiling0[etage].vertex(i*wallW-wallW/2, j*wallH-wallH/2, 50);
@@ -221,6 +227,7 @@ void initPyramide(int etage, int SIZE) {
   laby0[etage].endShape();
   ceiling0[etage].endShape();
   ceiling1[etage].endShape();
+  sortie.endShape();
 }
 
 void drawMiniMap(int SIZE, int etage) {
