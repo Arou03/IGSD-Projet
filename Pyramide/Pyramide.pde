@@ -31,7 +31,7 @@ char[][][][] sides ;
 PShape laby0[];
 PShape ceiling0[];
 PShape ceiling1[];
-PShape sortie;
+PShape sortie[];
 
 float wallW;
 float wallH;
@@ -52,6 +52,7 @@ void setup() {
   laby0 = new PShape[LAB_SIZE/2-1];
   ceiling0 = new PShape[LAB_SIZE/2-1];
   ceiling1 = new PShape[LAB_SIZE/2-1];
+  sortie = new PShape[LAB_SIZE/2-1];
   int j = 0;
   for(int i = 5; i <= LAB_SIZE; i+=2) {
     initPyramide(j, i);
@@ -125,10 +126,10 @@ void initPyramide(int etage, int SIZE) {
   float wallW = width/LAB_SIZE;
   float wallH = height/LAB_SIZE;
   
-  sortie = createShape();
-  sortie.beginShape(QUADS);
-  sortie.texture(texture1);
-  sortie.noStroke();
+  sortie[etage] = createShape();
+  sortie[etage].beginShape(QUADS);
+  sortie[etage].texture(texture1);
+  sortie[etage].noStroke();
   
   ceiling0[etage] = createShape();
   ceiling1[etage] = createShape();
@@ -209,12 +210,21 @@ void initPyramide(int etage, int SIZE) {
         ceiling1[etage].vertex(i*wallW+wallW/2, j*wallH+wallH/2, 50);
         ceiling1[etage].vertex(i*wallW-wallW/2, j*wallH+wallH/2, 50);        
       } else {
-        laby0[etage].fill(255); //grounds
-        laby0[etage].vertex(i*wallW-wallW/2, j*wallH-wallH/2, -50, (0)/(float)WALLD*texture0.width, (0.5+(0)/2.0/WALLD)*texture0.height);
-        laby0[etage].vertex(i*wallW+wallW/2, j*wallH-wallH/2, -50, (1)/(float)WALLD*texture0.width, (0.5+(0)/2.0/WALLD)*texture0.height);
-        laby0[etage].vertex(i*wallW+wallW/2, j*wallH+wallH/2, -50, (1)/(float)WALLD*texture0.width, (0.5+(1)/2.0/WALLD)*texture0.height);
-        laby0[etage].vertex(i*wallW-wallW/2, j*wallH+wallH/2, -50, (0)/(float)WALLD*texture0.width, (0.5+(1)/2.0/WALLD)*texture0.height);
-        
+        if(labyrinthe[etage][j][i]=='s') {
+          sortie[etage].normal(0,0,1);
+          sortie[etage].fill(156); //grounds
+          sortie[etage].vertex(i*wallW-wallW/2, j*wallH-wallH/2, -50, (0)/(float)WALLD*texture1.width, ((0)/WALLD)*texture1.height);
+          sortie[etage].vertex(i*wallW+wallW/2, j*wallH-wallH/2, -50, (1)/(float)WALLD*texture1.width, ((0)/WALLD)*texture1.height);
+          sortie[etage].vertex(i*wallW+wallW/2, j*wallH+wallH/2, -50, (1)/(float)WALLD*texture1.width, ((1)/WALLD)*texture1.height);
+          sortie[etage].vertex(i*wallW-wallW/2, j*wallH+wallH/2, -50, (0)/(float)WALLD*texture1.width, ((1)/WALLD)*texture1.height);
+        } else {
+          laby0[etage].fill(156); //grounds
+          laby0[etage].normal(0,0,1);
+          laby0[etage].vertex(i*wallW-wallW/2, j*wallH-wallH/2, -50, (0)/(float)WALLD*texture0.width, (0.5+(0)/2.0/WALLD)*texture0.height);
+          laby0[etage].vertex(i*wallW+wallW/2, j*wallH-wallH/2, -50, (1)/(float)WALLD*texture0.width, (0.5+(0)/2.0/WALLD)*texture0.height);
+          laby0[etage].vertex(i*wallW+wallW/2, j*wallH+wallH/2, -50, (1)/(float)WALLD*texture0.width, (0.5+(1)/2.0/WALLD)*texture0.height);
+          laby0[etage].vertex(i*wallW-wallW/2, j*wallH+wallH/2, -50, (0)/(float)WALLD*texture0.width, (0.5+(1)/2.0/WALLD)*texture0.height);
+          }
         ceiling0[etage].fill(32); // top of walls
         ceiling0[etage].vertex(i*wallW-wallW/2, j*wallH-wallH/2, 50);
         ceiling0[etage].vertex(i*wallW+wallW/2, j*wallH-wallH/2, 50);
@@ -227,7 +237,7 @@ void initPyramide(int etage, int SIZE) {
   laby0[etage].endShape();
   ceiling0[etage].endShape();
   ceiling1[etage].endShape();
-  sortie.endShape();
+  sortie[etage].endShape();
 }
 
 void drawMiniMap(int SIZE, int etage) {
@@ -323,7 +333,7 @@ void drawLaby(int SIZE, int etage) {
       popMatrix();
     }
   }
-  
+  shape(sortie[etage], 0, 0);
   shape(laby0[etage], 0, 0);
   if (inLab)
     shape(ceiling0[etage], 0, 0);
@@ -349,7 +359,10 @@ void setupCam(int SIZE) {
     //  (posX+dirX-dirX*anim/20.0)*wallW, (posY+dirY-dirY*anim/20.0)*wallH, -15+10*sin(anim*PI/20.0), 0, 0, -1);
 
     lightFalloff(0.0, 0.01, 0.0001);
-    pointLight(255, 255, 255, posX*wallW, posY*wallH, 15);
+    spotLight(255, 255, 255, 
+              posX*wallW, posY*wallH, -15,
+              dirX, dirY, -1,
+              PI/2.0, 1);
   } else{
   float rotationAngle = map(mouseX, 0, width, 0, TWO_PI);
   float elevationAngle = map(mouseY, 0, height, 0, PI);
@@ -437,4 +450,11 @@ void keyPressed() {
     spectX -= centerY * 15;
     spectY += centerX * 15;
   }
+  if (keyCode==32 && inLab && labyrinthe[currentFloor][posY][posX] =='s') {
+    posX = 1;
+    posY = 0;
+    dirX = 0;
+    dirY = 1;
+    currentFloor++;
+  }   
 }
