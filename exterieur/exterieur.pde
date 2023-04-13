@@ -4,6 +4,8 @@ float wallW = 1000/LAB_SIZE;
 float wallH = 1000/LAB_SIZE;
 PShape murVertical;
 PShape murHorizontal;
+PShape Sable;
+PShape soleil;
 
 float spectX = 0;
 float spectY = 0;
@@ -13,13 +15,15 @@ float centerX;
 float centerY;
 float centerZ;
 
-PImage  texture0;
+PImage texture0;
+PImage textureSable;
 
 void setup() {
    randomSeed(2);
    size(1000, 1000, P3D);
    
    texture0 = loadImage("stones.jpg");
+   textureSable = loadImage("sable.jpg");
    
    murVertical = createShape();
    murVertical.beginShape(QUAD);
@@ -124,15 +128,50 @@ void setup() {
    murVertical.endShape();
    murHorizontal.endShape();
    
+   Sable = createShape();
+   Sable.beginShape(QUAD);
+   Sable.texture(textureSable);
+   Sable.noStroke();
+   PVector v1;
+   PVector v2; 
+   PVector v3;
+   for(int i = -21; i < 21 * 2; i++) {
+     for(int j = -21; j < 21 * 2; j++) {
+       Sable.vertex(wallH * i, wallW * j, noise(i, j) * 10, 
+                            (0)*textureSable.height, (0)*textureSable.width);
+       Sable.vertex(wallH * i, wallW * (j + 1), noise(i, j+1) * 10, 
+                            (0)*textureSable.height, (1)*textureSable.width);
+       Sable.vertex(wallH * (i + 1), wallW * (j + 1), noise(i+1, j+1) * 10,   
+                            (1)*textureSable.height, (1)*textureSable.width);
+       Sable.vertex(wallH * (i + 1), wallW * j, noise(i+1, j) * 10,  
+                            (1)*textureSable.height, (0)*textureSable.width);
+       v1 = new PVector(1, 0, noise(i, j) + noise(i+1, j));
+       v2 = new PVector(0, 1, noise(i, j) + noise(i, j+1));
+       v3 = v1.cross(v2);
+       Sable.normal(v3.x, v3.y, v3.z);
+     }
+   }
+   Sable.endShape();
+   
+   soleil = createShape(SPHERE, 100);
+   soleil.setStroke(0);
+   soleil.setVisible(true);
+   soleil.setFill(color(255, 255, 200));
+   soleil.translate(200, 200, 1000);
 }
 
 void draw() {
-  background(192);
+  background(135, 206, 235);
   perspective(2*PI/3.0, float(width)/float(height), 1, 1500);
   cam();
   translate(0, (1)*wallH, -((wallH + wallW)/2));
   shape(murVertical);
   shape(murHorizontal);
+  shape(Sable);
+  shape(soleil);
+      
+ pointLight(255, 255, 200, 
+            200, 200, 1000);
 }
 
 void cam() {
