@@ -234,17 +234,22 @@ void initExterieur() {
    Sable.resetMatrix();
    for(int i = -21; i < 21 * 2; i++) {
      for(int j = -21; j < 21 * 2; j++) {
-       Sable.vertex(wallH * i, wallW * j, noise(i, j) * 10, 
+       Sable.vertex(wallH * i, wallW * j, noise(i/5.0, j/5.0) * 5, 
                             (0)*texture3.height, (0)*texture3.width);
-       Sable.vertex(wallH * i, wallW * (j + 1), noise(i, j+1) * 10, 
+       Sable.vertex(wallH * i, wallW * (j + 1), noise(i/5.0, (j+1)/5.0) * 5, 
                             (0)*texture3.height, (1)*texture3.width);
-       Sable.vertex(wallH * (i + 1), wallW * (j + 1), noise(i+1, j+1) * 10,   
+       Sable.vertex(wallH * (i + 1), wallW * (j + 1), noise((i+1)/5.0, (j+1)/5.0) * 5,   
                             (1)*texture3.height, (1)*texture3.width);
-       Sable.vertex(wallH * (i + 1), wallW * j, noise(i+1, j) * 10,  
+       Sable.vertex(wallH * (i + 1), wallW * j, noise((i+1)/5.0, j/5.0) * 5,  
                             (1)*texture3.height, (0)*texture3.width);
-       v1 = new PVector(1, 0, noise(i, j) + noise(i+1, j));
-       v2 = new PVector(0, 1, noise(i, j) + noise(i, j+1));
+       v1 = new PVector(1 * wallW, 0, noise(i, j) + noise(i+1, j));
+       v1.normalize();
+       v2 = new PVector(0, 1 * wallH, noise(i, j) + noise(i, j+1));
+       v2.normalize();
        v3 = v1.cross(v2);
+       v3.normalize();
+       println("v1 : " + v1 + " v2 : " + v2);
+       println("v3 : " + v3);
        Sable.normal(v3.x, v3.y, -v3.z);
      }
    }
@@ -668,9 +673,8 @@ void setupCam(int SIZE) {
       camera(cX, cY, cZ, 
              (posX-dirX*anim/20.0+dirX)*wallW, (posY-dirY*anim/20.0+dirY)*wallH, -15+2*sin(anim*PI/5.0), 0, 0, -1);
     } else if (animR) {
-      cX = posX*wallW; cY = posY*wallH; cZ = -15;
-      camera(cX, cY, -cZ, 
-            (posX+(odirX*anim+dirX*(20-anim))/20.0)*wallW, (posY+(odirY*anim+dirY*(20-anim))/20.0)*wallH, -15+2*sin(anim*PI/5.0), 0, 0, -1);
+      camera(posX*wallW, posY*wallH, -15, 
+            (posX+(odirX*anim+dirX*(20-anim))/20.0)*wallW, (posY+(odirY*anim+dirY*(20-anim))/20.0)*wallH, -15-5*sin(anim*PI/20.0), 0, 0, -1);
     } else {
       cX = posX*wallW; cY = posY*wallH; cZ = -15;
       camera(cX, cY, cZ, 
@@ -681,6 +685,7 @@ void setupCam(int SIZE) {
     //  (posX+dirX-dirX*anim/20.0)*wallW, (posY+dirY-dirY*anim/20.0)*wallH, -15+10*sin(anim*PI/20.0), 0, 0, -1);
 
     if(!sorti) lightFalloff(0.0, 0.01, 0.0001);
+    else lightFalloff(1.0, 0.0, 0.0);
     pointLight(255, 255, 255, 
                cX, cY, cZ);
     
@@ -696,6 +701,7 @@ void setupCam(int SIZE) {
         centerX + spectX, centerY + spectY, centerZ + spectZ, 
         0, 0, -1);
         
+  lightFalloff(1.0, 0.0, 0.0);
   pointLight(255, 255, 255, 
              spectX, spectY, spectZ);
   }
