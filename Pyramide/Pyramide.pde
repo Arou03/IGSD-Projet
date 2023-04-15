@@ -46,7 +46,6 @@ PImage  texture0;
 PImage  texture1;
 
 int currentFloor = 8;
-boolean sorti = true;
 
 //Momie
 PShape corps;
@@ -98,7 +97,7 @@ void setup() {
   initDirection();
   initMomie();
   initExterieur();
-  exterieur.translate(-wallW/2.0, -wallW/2.0, -((wallH+wallW)/2));
+  exterieur.translate(-wallW/2.0 - wallW, -wallH/2.0 - wallH, -((wallH+wallW)/2));
   
   labyrinthe = new char[LAB_SIZE/2-1][LAB_SIZE][LAB_SIZE];
   sides = new char[LAB_SIZE/2-1][LAB_SIZE][LAB_SIZE][4];
@@ -180,6 +179,7 @@ void initExterieur() {
        for(int i = 0; i < arete; i++) {
          murVertical.fill(i*255/arete, 255-(i*255/arete+arete*1255/LAB_SIZE), arete*255/LAB_SIZE);
          
+         murVertical.normal(0, 1, 0);
          murVertical.vertex(wallW * i + decal, 0 + decal, h+0 + decal * 2, 
                            (1)*texture2.width, (0)*texture2.height/2.0);
          murVertical.vertex(wallH * i + decal, 0 + decal, h+((wallH+wallW)/2) + decal * 2, 
@@ -189,6 +189,7 @@ void initExterieur() {
          murVertical.vertex(wallW * (i + 1) + decal, 0 + decal, h+0 + decal * 2, 
                            (0)*texture2.width, (0)*texture2.height/2.0);
          
+         murVertical.normal(-1, 0, 0);
          murVertical.vertex(0 + decal, wallW * i + decal, h+0 + decal * 2, 
                            (1)*texture2.width, (0)*texture2.height/2.0);
          murVertical.vertex(0 + decal, wallH * i + decal, h+((wallH+wallW)/2) + decal * 2, 
@@ -198,6 +199,7 @@ void initExterieur() {
          murVertical.vertex(0 + decal, wallW * (i + 1) + decal, h+0 + decal * 2, 
                            (0)*texture2.width, (0)*texture2.height/2.0);
          
+         murVertical.normal(0, -1, 0);
          murVertical.vertex(wallW * i + decal, arete * wallW + decal, h+0 + decal * 2, 
                            (1)*texture2.width, (0)*texture2.height/2.0);
          murVertical.vertex(wallH * i + decal, arete * wallW + decal, h+((wallH+wallW)/2) + decal * 2, 
@@ -206,15 +208,17 @@ void initExterieur() {
                            (0)*texture2.width, (1)*texture2.height/2.0);
          murVertical.vertex(wallW * (i + 1) + decal, arete * wallW + decal, h+0 + decal * 2, 
                            (0)*texture2.width, (0)*texture2.height/2.0);
-         
-         murVertical.vertex(arete * wallH + decal, wallW * i + decal, h+0 + decal * 2, 
-                           (1)*texture2.width, (0)*texture2.height/2.0);;
-         murVertical.vertex(arete * wallH + decal, wallH * i + decal, h+((wallH+wallW)/2) + decal * 2, 
-                           (1)*texture2.width, (1)*texture2.height/2.0);
-         murVertical.vertex(arete * wallH + decal, wallH * (i + 1) + decal, h+((wallH+wallW)/2) + decal * 2, 
-                           (0)*texture2.width, (1)*texture2.height/2.0);
-         murVertical.vertex(arete * wallH + decal, wallW * (i + 1) + decal, h+0 + decal * 2, 
-                           (0)*texture2.width, (0)*texture2.height/2.0);
+         if(!(arete == LAB_SIZE + 2 && i == arete - 3)) {
+           murVertical.normal(1, 0, 0);
+           murVertical.vertex(arete * wallH + decal, wallW * i + decal, h+0 + decal * 2, 
+                             (1)*texture2.width, (0)*texture2.height/2.0);;
+           murVertical.vertex(arete * wallH + decal, wallH * i + decal, h+((wallH+wallW)/2) + decal * 2, 
+                             (1)*texture2.width, (1)*texture2.height/2.0);
+           murVertical.vertex(arete * wallH + decal, wallH * (i + 1) + decal, h+((wallH+wallW)/2) + decal * 2, 
+                             (0)*texture2.width, (1)*texture2.height/2.0);
+           murVertical.vertex(arete * wallH + decal, wallW * (i + 1) + decal, h+0 + decal * 2, 
+                             (0)*texture2.width, (0)*texture2.height/2.0);
+         }
        }
      }
    }
@@ -234,23 +238,21 @@ void initExterieur() {
    Sable.resetMatrix();
    for(int i = -21; i < 21 * 2; i++) {
      for(int j = -21; j < 21 * 2; j++) {
-       Sable.vertex(wallH * i, wallW * j, noise(i/5.0, j/5.0) * 5, 
-                            (0)*texture3.height, (0)*texture3.width);
-       Sable.vertex(wallH * i, wallW * (j + 1), noise(i/5.0, (j+1)/5.0) * 5, 
-                            (0)*texture3.height, (1)*texture3.width);
-       Sable.vertex(wallH * (i + 1), wallW * (j + 1), noise((i+1)/5.0, (j+1)/5.0) * 5,   
-                            (1)*texture3.height, (1)*texture3.width);
-       Sable.vertex(wallH * (i + 1), wallW * j, noise((i+1)/5.0, j/5.0) * 5,  
-                            (1)*texture3.height, (0)*texture3.width);
-       v1 = new PVector(1 * wallW, 0, noise(i, j) + noise(i+1, j));
+       v1 = new PVector(1 * wallW, 0, noise(i/5.0, j/5.0) * 10 + noise((i+1)/5.0, j/5.0) * 10);
        v1.normalize();
-       v2 = new PVector(0, 1 * wallH, noise(i, j) + noise(i, j+1));
+       v2 = new PVector(0, 1 * wallH, noise(i/5.0, j/5.0) * 10 + noise(i/5.0, (j+1)/5.0) * 10);
        v2.normalize();
        v3 = v1.cross(v2);
        v3.normalize();
-       println("v1 : " + v1 + " v2 : " + v2);
-       println("v3 : " + v3);
        Sable.normal(v3.x, v3.y, -v3.z);
+       Sable.vertex(wallH * i, wallW * j, noise(i/5.0, j/5.0) * 10, 
+                            (0)*texture3.height, (0)*texture3.width);
+       Sable.vertex(wallH * i, wallW * (j + 1), noise(i/5.0, (j+1)/5.0) * 10, 
+                            (0)*texture3.height, (1)*texture3.width);
+       Sable.vertex(wallH * (i + 1), wallW * (j + 1), noise((i+1)/5.0, (j+1)/5.0) * 10,   
+                            (1)*texture3.height, (1)*texture3.width);
+       Sable.vertex(wallH * (i + 1), wallW * j, noise((i+1)/5.0, j/5.0) * 10,  
+                            (1)*texture3.height, (0)*texture3.width);
      }
    }
    Sable.setVisible(true);
@@ -545,6 +547,38 @@ void initPyramide(int etage, int SIZE) {
     }
   }
   
+  laby0[etage].normal(0, 1, 0);
+  for (int l=0; l<2; l++) {
+    laby0[etage].vertex(0*wallW + wallW/2, -wallH/2.0, (l+1)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        0*texture0.width, (1+l)/2.0*texture0.height);
+    laby0[etage].vertex(1*wallW + wallW/2, -wallH/2.0, (l+1)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        1*texture0.width, (1+l)/2.0*texture0.height);
+    laby0[etage].vertex(1*wallW + wallW/2, -wallH/2.0, (l+0)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        1*texture0.width, (0+l)/2.0*texture0.height);
+    laby0[etage].vertex(0*wallW + wallW/2, -wallH/2.0, (l+0)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        0*texture0.width, (0+l)/2.0*texture0.height);
+  }
+  for (int l=0; l<2; l++) {
+    laby0[etage].vertex((SIZE-1)*wallW + wallW/2, (SIZE-1)*wallH-wallH/2.0, (l+1)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        0*texture0.width, (1+l)/2.0*texture0.height);
+    laby0[etage].vertex((SIZE)*wallW + wallW/2, (SIZE-1)*wallH-wallH/2.0, (l+1)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        1*texture0.width, (1+l)/2.0*texture0.height);
+    laby0[etage].vertex((SIZE)*wallW + wallW/2, (SIZE-1)*wallH-wallH/2.0, (l+0)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        1*texture0.width, (0+l)/2.0*texture0.height);
+    laby0[etage].vertex((SIZE-1)*wallW + wallW/2, (SIZE-1)*wallH-wallH/2.0, (l+0)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        0*texture0.width, (0+l)/2.0*texture0.height);
+  }
+  for (int l=0; l<2; l++) {
+    laby0[etage].vertex((SIZE-1)*wallW + wallW/2, (SIZE-2)*wallH-wallH/2.0, (l+1)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        0*texture0.width, (1+l)/2.0*texture0.height);
+    laby0[etage].vertex((SIZE)*wallW + wallW/2, (SIZE-2)*wallH-wallH/2.0, (l+1)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        1*texture0.width, (1+l)/2.0*texture0.height);
+    laby0[etage].vertex((SIZE)*wallW + wallW/2, (SIZE-2)*wallH-wallH/2.0, (l+0)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        1*texture0.width, (0+l)/2.0*texture0.height);
+    laby0[etage].vertex((SIZE-1)*wallW + wallW/2, (SIZE-2)*wallH-wallH/2.0, (l+0)*((wallH+wallW)/2) - (wallH+wallW)/2, 
+                        0*texture0.width, (0+l)/2.0*texture0.height);
+  }
+  
   laby0[etage].endShape();
   ceiling0[etage].endShape();
   ceiling1[etage].endShape();
@@ -684,9 +718,8 @@ void setupCam(int SIZE) {
     //camera((posX-dirX*anim/20.0)*wallW, (posY-dirY*anim/20.0)*wallH, -15+6*sin(anim*PI/20.0), 
     //  (posX+dirX-dirX*anim/20.0)*wallW, (posY+dirY-dirY*anim/20.0)*wallH, -15+10*sin(anim*PI/20.0), 0, 0, -1);
 
-    if(!sorti) lightFalloff(0.0, 0.01, 0.0001);
-    else lightFalloff(1.0, 0.0, 0.0);
-    pointLight(255, 255, 255, 
+    lightFalloff(1, 0.001, 0.00001);
+    pointLight(255*4/5, 255*7/10, 255*2/5, 
                cX, cY, cZ);
     
   } else{
@@ -701,7 +734,7 @@ void setupCam(int SIZE) {
         centerX + spectX, centerY + spectY, centerZ + spectZ, 
         0, 0, -1);
         
-  lightFalloff(1.0, 0.0, 0.0);
+  lightFalloff(1, 0.001, 0.00001);
   pointLight(255, 255, 255, 
              spectX, spectY, spectZ);
   }
@@ -737,14 +770,7 @@ void draw() {
   setupCam(21);
   drawLaby((currentFloor)*2+5,currentFloor);
   drawMomie();
-  if (sorti) {
-    shape(exterieur);
-    pushMatrix();
-    resetMatrix();
-    pointLight(255, 255, 200, 
-               width/2.0, height/2.0, 1500);
-    popMatrix();
-  }
+  if (currentFloor == 8) shape(exterieur);
 }
 
 void mouvementMomie() {
@@ -845,6 +871,6 @@ void keyPressed() {
       dirX = 0;
       dirY = 1;
       currentFloor++;
-    } else sorti = true;
+    }
   }   
 }
