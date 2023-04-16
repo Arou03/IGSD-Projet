@@ -228,25 +228,26 @@ void draw() {
   camera(width/2.0, height/2.0, (height/2.0) / tan(PI*30.0 / 180.0), width/2.0, height/2.0, 0, 0, 1, 0);
   noLights();
   stroke(0);
- 
-  for (int j=0; j<LAB_SIZE; j++) {
-    for (int i=0; i<LAB_SIZE; i++) {
-    if( posY+dirY>-1) {deplace[posY+dirY][posX+dirX]=true;}
-      //deplace[py][posX]=true;
-      if (labyrinthe[j][i]=='#' && deplace[j][i]) {
-        fill(i*25, j*25, 255-i*10+j*10);
-        pushMatrix();
-        translate(50+i*wallW/8, 50+j*wallH/8, 50);
-        box(wallW/10, wallH/10, 5);
-        popMatrix(); 
-        if(i>0 && j>0 && j<LAB_SIZE-1 && i<LAB_SIZE-1){
-          deplace[j-1][i-1]=true;
-          deplace[j-1][i]=true;
-          deplace[j+1][i]=true;
-          deplace[j][i-1]= true;
-          deplace[j+1][i+1]= true;
-          deplace[j+1][i]=true;
-          deplace[j][i+1]=true;
+  if(posY < LAB_SIZE-1 && posX < LAB_SIZE-1) {
+    for (int j=0; j<LAB_SIZE; j++) {
+      for (int i=0; i<LAB_SIZE; i++) {
+      if( posY+dirY>-1) {deplace[posY+dirY][posX+dirX]=true;}
+        //deplace[py][posX]=true;
+        if (labyrinthe[j][i]=='#' && deplace[j][i]) {
+          fill(i*25, j*25, 255-i*10+j*10);
+          pushMatrix();
+          translate(50+i*wallW/8, 50+j*wallH/8, 50);
+          box(wallW/10, wallH/10, 5);
+          popMatrix(); 
+          if(i>0 && j>0 && j<LAB_SIZE-1 && i<LAB_SIZE-1){
+            deplace[j-1][i-1]=true;
+            deplace[j-1][i]=true;
+            deplace[j+1][i]=true;
+            deplace[j][i-1]= true;
+            deplace[j+1][i+1]= true;
+            deplace[j+1][i]=true;
+            deplace[j][i+1]=true;
+          }
         }
       }
     }
