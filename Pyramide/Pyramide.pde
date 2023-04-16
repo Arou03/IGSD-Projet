@@ -43,13 +43,12 @@ PImage texture4;
 
 int currentFloor = 0;
 
-
 void setup() { 
   pixelDensity(2);
   randomSeed(2);
   
   texture0 = loadImage("stones.jpg");
-  texture1 = loadImage("sortie.jpg");
+  texture1 = loadImage("sortie.png");
   texture2 = loadImage("stones_exterior.jpg");
   texture3 = loadImage("sable.jpg");
   texture4 = loadImage("boussole.png");
@@ -74,6 +73,8 @@ void setup() {
     initPyramide(j, i);
     j++;
   }
+  
+  initTeleporteur();
 }
 
 void drawMiniMap(int SIZE, int etage) {
@@ -176,7 +177,10 @@ void drawLaby(int SIZE, int etage) {
       popMatrix();
     }
   }
-  shape(sortie[etage], 0, 0);
+  if(etage < 8 ) {
+    shape(sortie[etage], 0, 0);
+    shape(teleporteur[etage], 0, 0);
+  }
   shape(laby0[etage], 0, 0);
   if (inLab)
     shape(ceiling0[etage], 0, 0);
@@ -219,6 +223,10 @@ void draw() {
   if (currentFloor == 8) shape(exterieur);
   
   drawBoussole();
+  
+  float zValue = 0.75 * sin(frameCount/60.0);
+  
+  teleporteur[currentFloor].translate(0, 0, zValue);
 }
 
 void mouvementMomie() {

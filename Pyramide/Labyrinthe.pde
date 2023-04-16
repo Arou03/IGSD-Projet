@@ -155,9 +155,9 @@ void initPyramide(int etage, int SIZE) {
         ceiling1[etage].vertex(i*wallW+wallW/2, j*wallH+wallH/2, ((wallH+wallW)/2));
         ceiling1[etage].vertex(i*wallW-wallW/2, j*wallH+wallH/2, ((wallH+wallW)/2));        
       } else {
-        if(labyrinthe[etage][j][i]=='s') {
+        if(labyrinthe[etage][j][i]=='s' && etage < 8) {
           sortie[etage].normal(0,0,1);
-          sortie[etage].fill(156); //grounds
+          sortie[etage].fill(i*25, j*25, 255-i*10+j*10); //grounds
           sortie[etage].vertex(i*wallW-wallW/2, j*wallH-wallH/2, -((wallH+wallW)/2), (0)/(float)WALLD*texture1.width, ((0)/WALLD)*texture1.height);
           sortie[etage].vertex(i*wallW+wallW/2, j*wallH-wallH/2, -((wallH+wallW)/2), (1)/(float)WALLD*texture1.width, ((0)/WALLD)*texture1.height);
           sortie[etage].vertex(i*wallW+wallW/2, j*wallH+wallH/2, -((wallH+wallW)/2), (1)/(float)WALLD*texture1.width, ((1)/WALLD)*texture1.height);
@@ -169,7 +169,7 @@ void initPyramide(int etage, int SIZE) {
           laby0[etage].vertex(i*wallW+wallW/2, j*wallH-wallH/2, -((wallH+wallW)/2), (1)/(float)WALLD*texture0.width, (0.5+(0)/2.0/WALLD)*texture0.height);
           laby0[etage].vertex(i*wallW+wallW/2, j*wallH+wallH/2, -((wallH+wallW)/2), (1)/(float)WALLD*texture0.width, (0.5+(1)/2.0/WALLD)*texture0.height);
           laby0[etage].vertex(i*wallW-wallW/2, j*wallH+wallH/2, -((wallH+wallW)/2), (0)/(float)WALLD*texture0.width, (0.5+(1)/2.0/WALLD)*texture0.height);
-          }
+        }
         ceiling0[etage].fill(i*25, j*25, 255-i*10+j*10); // top of walls
         ceiling0[etage].vertex(i*wallW-wallW/2, j*wallH-wallH/2, ((wallH+wallW)/2), (0)/(float)WALLD*texture0.width, (0.5+(0)/2.0/WALLD)*texture0.height);
         ceiling0[etage].vertex(i*wallW+wallW/2, j*wallH-wallH/2, ((wallH+wallW)/2), (1)/(float)WALLD*texture0.width, (0.5+(0)/2.0/WALLD)*texture0.height);

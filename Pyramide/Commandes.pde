@@ -1,12 +1,12 @@
 void keyPressed() {
-  if(inLab) mouvementMomie();
+  if(inLab && anim==0) mouvementMomie();
   if (key=='l') {
     inLab = !inLab;
     println("you are " + inLab + " inLab");
   }
 
   if (anim==0 && keyCode==38 && inLab) {
-    if (posX+dirX>=0 && posX+dirX<LAB_SIZE && posY+dirY>=0 && posY+dirY<LAB_SIZE) {
+    if (posX+dirX>=0 && posX+dirX<currentFloor * 2 + 5 && posY+dirY>=0 && posY+dirY<currentFloor * 2 + 5) {
       if(labyrinthe[currentFloor][posY+dirY][posX+dirX]!='#') {
         posX+=dirX; 
         posY+=dirY;
@@ -15,15 +15,17 @@ void keyPressed() {
         animR = false;
       }
     } else {
-      posX+=dirX; 
-      posY+=dirY;
-      anim=20;
-      animT = true;
-      animR = false;
+      if(currentFloor == 8) {
+        posX+=dirX; 
+        posY+=dirY;
+        anim=20;
+        animT = true;
+        animR = false;
+      }
     }
   }
   if (anim==0 && keyCode==40  && inLab) {
-    if (posX-dirX>=0 && posX-dirX<LAB_SIZE && posY-dirY>=0 && posY-dirY<LAB_SIZE &&
+    if (posX-dirX>=0 && posX-dirX<currentFloor * 2 + 5 && posY-dirY>=0 && posY-dirY<currentFloor * 2 + 5 &&
       labyrinthe[currentFloor][posY-dirY][posX-dirX]!='#') {
       posX-=dirX; 
       posY-=dirY;
